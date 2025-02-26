@@ -1,77 +1,38 @@
 trigger:
-- main
+  - main
 
 pool:
   name: "Default"
 
-stages:
-- stage: CI
-  displayName: 'Build and Test'
-  jobs:
-  - job: BuildAndTest
-    steps:
-    - script: echo "Iniciando pipeline CI/CD"
-      displayName: "Inicio del Pipeline"
+steps:
+  - script: echo "🚀 Iniciando pipeline CI/CD"
+    displayName: "Inicio del Pipeline"
 
-    # Paso 1: Construcción con Maven usando la tarea oficial de Azure DevOps
-    - task: Maven@3
-      inputs:
-        mavenPomFile: 'pom.xml'
-        goals: 'clean install'
-        publishJUnitResults: true
-        testResultsFiles: '**/surefire-reports/TEST-*.xml'
-        javaHomeOption: 'JDKVersion'
-        mavenVersionOption: 'Default'
-        mavenAuthenticateFeed: false
-        effectivePomSkip: false
-        sonarQubeRunAnalysis: false
-      displayName: "Build con Maven"
+  # Verificar que Maven está correctamente instalado
+  - script: |
+      echo "🔍 Verificando Maven..."
+      mvn -version
+    displayName: "Verificar Maven"
 
-    # Paso 2: Ejecutar pruebas (ya incluidas en el build de Maven)
+  # Construcción con Maven
+  - task: Maven@3
+    inputs:
+      mavenPomFile: 'pom.xml'
+      goals: 'clean install'
+      publishJUnitResults: true
+      testResultsFiles: '**/surefire-reports/TEST-*.xml'
+      javaHomeOption: 'JDKVersion'
+      mavenVersionOption: 'Default'
+    displayName: "🔧 Build con Maven"
 
-    # Publicar artefactos para el despliegue
-    - task: PublishBuildArtifacts@1
-      inputs:
-        PathtoPublish: 'target'
-        ArtifactName: 'jar-files'
-        publishLocation: 'Container'
-      displayName: "Publicar artefactos"
-
-    # Paso 3: Subir cambios a GitHub
-    - script: |
-        git config --global user.email "ejemplo@email.com"
-        git config --global user.name "TheChoyERROR"
-        git remote add github https://github.com/TheChoyERROR/Azure001.git
-        git push github main
-      displayName: "Subir cambios a GitHub"
-      env:
-        GITHUB_TOKEN: $(githubToken)
-
-- stage: CD
-  displayName: 'Deploy'
-  dependsOn: CI
-  condition: succeeded()
-  jobs:
-  - deployment: DeployToAzure
-    environment: 'development'
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - task: DownloadBuildArtifacts@1
-            inputs:
-              buildType: 'current'
-              downloadType: 'single'
-              artifactName: 'jar-files'
-              downloadPath: '$(System.ArtifactsDirectory)'
-            displayName: "Descargar artefactos"
-          
-          # Despliegue a Azure Web App
-          - task: AzureWebApp@1
-            inputs:
-              azureSubscription: 'your-azure-service-connection'
-              appType: 'webAppLinux'
-              appName: 'your-web-app-name'
-              package: '$(System.ArtifactsDirectory)/jar-files/*.jar'
-              deploymentMethod: 'auto'
-            displayName: "Desplegar a Azure Web App"
+  # Subir cambios a GitHub (asegurar que el repositorio remoto existe)
+  - script: |
+      git config --global user.email "ejemplo@email.com"
+      git config --global user.name "TheChoyERROR"
+      git remote set-url origin https://$(GITHUB_TOKEN)@github.com/TheChoyERROR/Azure001.git
+      git add .
+      git commit -m "Actualización desde Azure DevOps"
+      git push origin main
+    displayName: "📤 Subir cambios a GitHub"
+    env:
+    GITHUB_TOKEN: $(DyelPYtaIFJHCOTydGHiXMhxSpeAOpyIeuK1503Rhr6ct6qovtzOJQQJ99BBACAAAAAAAAAAAAASAZDO3miF)
