@@ -1,8 +1,3 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
 - main
 
@@ -10,10 +5,33 @@ pool:
   name: "Default"
 
 steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+- script: echo "Iniciando pipeline CI/CD"
+  displayName: "Inicio del Pipeline"
 
+# Paso 1: Construcción (selecciona el que necesites)
+- script: mvn clean install
+  displayName: "Build con Maven"
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
+
+# - script: npm install && npm run build
+#   displayName: "Build con Node.js"
+
+# - script: dotnet build --configuration Release
+#   displayName: "Build con .NET"
+
+# Paso 2: Ejecutar pruebas
+- script: mvn test
+  displayName: "Ejecutar Pruebas"
+
+# - script: npm test
+#   displayName: "Ejecutar Pruebas (Node.js)"
+
+# Paso 3: Subir cambios a GitHub
 - script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+    git config --global user.email "ejemplo@email.com"
+    git config --global user.name "TheChoyERROR"
+    git remote add github https://github.com/TheChoyERROR/Azure001.git
+    git push github main
+  displayName: "Subir cambios a GitHub"
+  env:
+    GITHUB_TOKEN: $(DyelPYtaIFJHCOTydGHiXMhxSpeAOpyIeuK1503Rhr6ct6qovtzOJQQJ99BBACAAAAAAAAAAAAASAZDO3miF)
