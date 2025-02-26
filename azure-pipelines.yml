@@ -35,4 +35,4 @@ steps:
       git push origin main
     displayName: "📤 Subir cambios a GitHub"
     env:
-    GITHUB_TOKEN: $(DyelPYtaIFJHCOTydGHiXMhxSpeAOpyIeuK1503Rhr6ct6qovtzOJQQJ99BBACAAAAAAAAAAAAASAZDO3miF)
+      GITHUB_TOKEN: $(DyelPYtaIFJHCOTydGHiXMhxSpeAOpyIeuK1503Rhr6ct6qovtzOJQQJ99BBACAAAAAAAAAAAAASAZDO3miF)
