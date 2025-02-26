@@ -8,23 +8,21 @@ steps:
 - script: echo "Iniciando pipeline CI/CD"
   displayName: "Inicio del Pipeline"
 
-# Paso 1: Construcción (selecciona el que necesites)
-- script: mvn clean install
+# Paso 1: Construcción con Maven usando la tarea oficial de Azure DevOps
+- task: Maven@3
+  inputs:
+    mavenPomFile: 'pom.xml'
+    goals: 'clean install'
+    publishJUnitResults: true
+    testResultsFiles: '**/surefire-reports/TEST-*.xml'
+    javaHomeOption: 'JDKVersion'
+    mavenVersionOption: 'Default'
+    mavenAuthenticateFeed: false
+    effectivePomSkip: false
+    sonarQubeRunAnalysis: false
   displayName: "Build con Maven"
-  condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
 
-# - script: npm install && npm run build
-#   displayName: "Build con Node.js"
-
-# - script: dotnet build --configuration Release
-#   displayName: "Build con .NET"
-
-# Paso 2: Ejecutar pruebas
-- script: mvn test
-  displayName: "Ejecutar Pruebas"
-
-# - script: npm test
-#   displayName: "Ejecutar Pruebas (Node.js)"
+# Paso 2: Ejecutar pruebas (ya incluidas en el build de Maven)
 
 # Paso 3: Subir cambios a GitHub
 - script: |
